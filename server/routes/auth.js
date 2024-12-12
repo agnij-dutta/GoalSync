@@ -6,16 +6,17 @@ import { auth } from '../middleware/auth.js';
 const router = express.Router();
 
 // GitHub OAuth routes - only enable if credentials exist
-if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-  router.get('/github',
-    passport.authenticate('github', { scope: ['user:email'] })
-  );
 
-  router.get('/github/callback',
-    passport.authenticate('github', { failureRedirect: '/login' }),
-    handleGitHubCallback
-  );
-}
+router.get('/github', (res, req, next) => {
+  console.log('GitHub auth route hit');
+  passport.authenticate('github', { scope: ['user:email'] })(res, req, next);
+});
+
+router.get('/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  handleGitHubCallback
+);
+
 
 // Regular authentication routes
 router.post('/register', register);

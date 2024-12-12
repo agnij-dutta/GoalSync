@@ -6,11 +6,12 @@ export const initializeGitHubStrategy = () => {
     console.warn('GitHub OAuth credentials not found. GitHub authentication will be disabled.');
     return null;
   }
+  console.log('Initializing GitHub strategy with client ID:', process.env.GITHUB_CLIENT_ID);
 
   return new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: `/api/auth/github/callback`
+    callbackURL: `${process.env.FRONTEND_URL}/api/auth/github/callback`
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -27,6 +28,7 @@ export const initializeGitHubStrategy = () => {
 
       return done(null, user);
     } catch (error) {
+      console.error('Error in GitHub strategy:', error);
       return done(error, null);
     }
   });

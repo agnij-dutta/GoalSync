@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import passport from 'passport';
 
 export const auth = (req, res, next) => {
   try {

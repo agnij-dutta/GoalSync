@@ -58,9 +58,14 @@ export const getProfile = async (req, res) => {
   }
 };
 
-export const handleGitHubCallback = (req, res) => {
-  const token = generateToken(req.user._id);
-  res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`);
+export const handleGitHubCallback = async (req, res) => {
+  try {
+    const token = generateToken(req.user._id);
+    res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${token}`);
+  } catch (error) {
+    console.error('Error during GitHub callback:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const generateToken = (userId) => {
