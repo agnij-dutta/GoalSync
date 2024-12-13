@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MessageCircle } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useFeedback } from '../../hooks/useFeedback';
 

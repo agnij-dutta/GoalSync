@@ -69,4 +69,13 @@ router.post('/:id/join', auth, async (req, res) => {
   }
 });
 
+router.get('/matches', auth, async (req, res) => {
+  try {
+    const matches = await Pod.findMatches(req.user.userId);
+    res.json(matches);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 export default router;

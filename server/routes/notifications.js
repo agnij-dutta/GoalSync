@@ -7,9 +7,7 @@ const router = express.Router();
 // Get all notifications for a user
 router.get('/', auth, async (req, res) => {
   try {
-    const notifications = await Notification.find({ userId: req.user.userId })
-      .sort('-createdAt')
-      .limit(50);
+    const notifications = await Notification.find({ userId: req.user.userId });
     res.json(notifications);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

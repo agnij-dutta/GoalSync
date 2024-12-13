@@ -11,6 +11,11 @@ import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import goalRoutes from './routes/goals.js';
 import podRoutes from './routes/pods.js';
+import feedbackRoutes from './routes/feedback.js';
+import progressRoutes from './routes/progress.js';
+import notificationRoutes from './routes/notifications.js';
+import achievementRoutes from './routes/achievements.js';
+import streakRoutes from './routes/streak.js';
 
 // Load environment variables
 dotenv.config();
@@ -78,6 +83,11 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/pods', podRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/achievements', achievementRoutes);
+app.use('/api/streak', streakRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -101,6 +111,9 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
+
+// Export the io instance
+export { io };
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
