@@ -38,7 +38,7 @@ GoalSync bridges the gap between personal aspiration and collective achievement 
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/goalsync.git
+   git clone https://github.com/agnij-dutta/GoalSync
    ```
 2. Navigate to the project directory:
    ```bash
@@ -84,7 +84,7 @@ We welcome contributions from the community! If you would like to contribute to 
 This project is licensed under the GNU General Public License, Version 3. See the [LICENSE](LICENSE) file for details.
 
 ## 📞 Contact
-For any inquiries or feedback, please reach out to us at [your_email@example.com](mailto:your_email@example.com).
+For any inquiries or feedback, please reach out to us at [agnijdutta413@gmail.com](mailto:agnijdutta413@gmail.com).
 
 ---
 
