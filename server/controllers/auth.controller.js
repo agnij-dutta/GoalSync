@@ -20,7 +20,12 @@ export const register = async (req, res) => {
       user: sanitizeUser(user)
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Registration error details:', error.message);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email already in use' });
+    }
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error during registration' });
   }
 };
 
@@ -82,3 +87,4 @@ const sanitizeUser = (user) => {
     avatar: user.avatar
   };
 };
+

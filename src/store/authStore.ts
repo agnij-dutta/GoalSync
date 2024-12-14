@@ -57,11 +57,12 @@ const useAuthStore = create<AuthState>((set) => ({
     }
   },
   
-  register: async (data) => {
+  register: async (data: RegisterData) => {
     try {
       set({ loading: true, error: null });
-      const user = await authService.register(data);
-      set({ user, isAuthenticated: true });
+      const response = await authService.register(data);
+      set({ user: response.user, isAuthenticated: true });
+      localStorage.setItem('token', response.token);
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       set({ error: errorMessage });
@@ -110,5 +111,5 @@ const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
-
 export default useAuthStore;
+

@@ -20,7 +20,7 @@ const RegisterForm: React.FC = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser(data.name, data.email, data.password);
+      await registerUser(data);
       navigate('/dashboard');
     } catch (error) {
       console.error('Registration failed:', error);
@@ -38,6 +38,11 @@ const RegisterForm: React.FC = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {useAuthStore.getState().error && (
+              <div className="mb-4 p-3 rounded bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-200 text-sm">
+                {useAuthStore.getState().error}
+              </div>
+            )}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Full Name
