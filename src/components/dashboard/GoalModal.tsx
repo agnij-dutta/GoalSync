@@ -30,7 +30,7 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onGoalCreated })
       });
       onGoalCreated(response.data);
       reset();
-      onClose();
+      // onClose();
     } catch (error) {
       console.error('Error creating goal:', error);
     }

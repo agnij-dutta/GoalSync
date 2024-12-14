@@ -4,7 +4,12 @@ import { Target, Plus } from 'lucide-react';
 import { Goal } from '../../types';
 import GoalModal from './GoalModal';
 
-const GoalList: React.FC = () => {
+
+interface GoalListProps {
+  goals: Goal[]; // Define the type for the goals prop
+}
+
+const GoalList: React.FC<GoalListProps> = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -28,7 +33,7 @@ const GoalList: React.FC = () => {
   };
 
   const handleGoalCreated = (newGoal: Goal) => {
-    setGoals([...goals, newGoal]);
+    setGoals((prevGoals) => [...prevGoals, newGoal]);
     setIsModalOpen(false);
   };
 

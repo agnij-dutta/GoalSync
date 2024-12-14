@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import { useTheme } from '../ThemeProvider';
+import axios from 'axios';
 
 interface RegisterFormData {
   name: string;
@@ -18,9 +19,23 @@ const RegisterForm: React.FC = () => {
   const loading = useAuthStore((state) => state.loading);
   const { theme, setTheme } = useTheme();
 
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      useAuthStore.getState().setUser(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
   const onSubmit = async (data: RegisterFormData) => {
     try {
       await registerUser(data);
+      await fetchUserData();
       navigate('/dashboard');
     } catch (error) {
       console.error('Registration failed:', error);

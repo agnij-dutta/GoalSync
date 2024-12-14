@@ -19,6 +19,7 @@ interface AuthState {
   logout: () => void;
   clearError: () => void;
   setToken: (token: string) => Promise<void>;
+  setUser: (user: User | null) => void;
 }
 
 const getErrorMessage = (error: unknown): string => {
@@ -109,6 +110,8 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ loading: false });
     }
   },
+  
+  setUser: (user) => set({ user }),
 }));
 
 export default useAuthStore;
