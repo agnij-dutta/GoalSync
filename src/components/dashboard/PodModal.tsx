@@ -1,14 +1,14 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { X } from 'lucide-react';
-import { Pod } from '../../types';
-import { useTheme } from '../ThemeProvider';
+import { Pod, User } from '../../types';
+import api from '../../services/api';
 
 interface PodModalProps {
   isOpen: boolean;
   onClose: () => void;
   onPodCreated: (pod: Pod) => void;
+  user: User;
 }
 
 interface PodFormData {
@@ -17,34 +17,22 @@ interface PodFormData {
   maxMembers: number;
 }
 
-const PodModal: React.FC<PodModalProps> = ({ isOpen, onClose, onPodCreated }) => {
+const PodModal: React.FC<PodModalProps> = ({ isOpen, onClose, onPodCreated, user }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PodFormData>({
     defaultValues: {
       maxMembers: 5,
     },
   });
-  const { theme } = useTheme();
 
   const onSubmit = async (data: PodFormData) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('You must be logged in to create a pod.');
-        return;
-      }
-
-      const response = await axios.post('/api/pods', data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.post('/pods', data);
       onPodCreated(response.data);
       reset();
       onClose();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        alert(`Failed to create pod: ${error.response.data.message || 'Unknown error'}`);
-      } else {
-        alert('Failed to create pod. Please check your authentication and try again.');
-      }
+      console.error('Error creating pod:', error);
+      // Handle error appropriately
     }
   };
 
@@ -97,4 +85,3 @@ const PodModal: React.FC<PodModalProps> = ({ isOpen, onClose, onPodCreated }) =>
 };
 
 export default PodModal;
-

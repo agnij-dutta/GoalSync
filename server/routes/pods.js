@@ -5,10 +5,10 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Get all pods
+// Get all pods for a user
 router.get('/', auth, async (req, res) => {
   try {
-    const pods = await Pod.find().populate('members', 'name email');
+    const pods = await Pod.find({ members: req.user.userId }).populate('members', 'name email');
     res.json(pods);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

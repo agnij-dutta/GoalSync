@@ -64,6 +64,21 @@ const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.register(data);
       set({ user: response.user, isAuthenticated: true });
       localStorage.setItem('token', response.token);
+
+      // Fetch user profile after registration
+      const profileResponse = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${response.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch user profile');
+      }
+
+      const userProfile = await profileResponse.json();
+      set({ user: userProfile, isAuthenticated: true });
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       set({ error: errorMessage });

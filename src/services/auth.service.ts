@@ -23,6 +23,10 @@ export const authService = {
 
       storage.setToken(token);
       storage.setUser(user);
+      
+      // Set the token in the api instance
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
       return user;
     } catch (error) {
       console.error('Login error:', error);
@@ -41,6 +45,10 @@ export const authService = {
 
       storage.setToken(token);
       storage.setUser(user);
+      
+      // Set the token in the api instance
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
       return user;
     } catch (error) {
       console.error('Registration error:', error);
@@ -53,12 +61,12 @@ export const authService = {
       const response = await api.get('/auth/me');
       return response.data;
     } catch (error) {
-      console.error('Get profile error:', error);
       throw handleApiError(error);
     }
   },
 
   logout() {
     storage.clearAuth();
-  },
+    delete api.defaults.headers.common['Authorization'];
+  }
 };

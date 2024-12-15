@@ -1,14 +1,14 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { X } from 'lucide-react';
-import { Goal } from '../../types';
-import { useTheme } from '../ThemeProvider';
+import { Goal, User } from '../../types';
+import api from '../../services/api';
 
 interface GoalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onGoalCreated: (goal: Goal) => void;
+  user: User;
 }
 
 interface GoalFormData {
@@ -18,21 +18,25 @@ interface GoalFormData {
   deadline: string;
 }
 
-const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onGoalCreated }) => {
+const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onGoalCreated, user }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<GoalFormData>();
-  const { theme } = useTheme();
 
   const onSubmit = async (data: GoalFormData) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('/api/goals', data, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await api.post('/goals', {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        deadline: data.deadline,
+        progress: 0
       });
+
       onGoalCreated(response.data);
       reset();
-      // onClose();
+      onClose();
     } catch (error) {
       console.error('Error creating goal:', error);
+      // Handle error appropriately
     }
   };
 
@@ -128,4 +132,3 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onGoalCreated })
 };
 
 export default GoalModal;
-

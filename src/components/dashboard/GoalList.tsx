@@ -1,45 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Target, Plus } from 'lucide-react';
-import { Goal } from '../../types';
+import { Goal, User } from '../../types';
 import GoalModal from './GoalModal';
 
-
 interface GoalListProps {
-  goals: Goal[]; // Define the type for the goals prop
+  goals: Goal[];
+  user: User;
+  onGoalCreated: (goal: Goal) => void;
 }
 
-const GoalList: React.FC<GoalListProps> = () => {
-  const [goals, setGoals] = useState<Goal[]>([]);
+const GoalList: React.FC<GoalListProps> = ({ goals, user, onGoalCreated }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchGoals();
-  }, []);
-
-  const fetchGoals = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/goals', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setGoals(response.data);
-    } catch (error) {
-      console.error('Error fetching goals:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGoalCreated = (newGoal: Goal) => {
-    setGoals((prevGoals) => [...prevGoals, newGoal]);
+    console.log('New goal created:', newGoal);
+    onGoalCreated(newGoal);
     setIsModalOpen(false);
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-600 dark:text-gray-400">Loading goals...</div>;
-  }
 
   return (
     <div>
@@ -102,6 +79,7 @@ const GoalList: React.FC<GoalListProps> = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onGoalCreated={handleGoalCreated}
+        user={user}
       />
     </div>
   );

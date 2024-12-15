@@ -1,46 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Users, Plus } from 'lucide-react';
-import { Pod } from '../../types';
+import { Pod, User } from '../../types';
 import PodModal from './PodModal';
 
 interface PodListProps {
   pods: Pod[];
   onPodCreated: (pod: Pod) => void;
+  user: User;
 }
 
-const PodList: React.FC<PodListProps> = ({onPodCreated }) => {
-  const [pods, setPods] = useState<Pod[]>([]);
+const PodList: React.FC<PodListProps> = ({ pods, onPodCreated, user }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPods();
-  }, []);
-
-  const fetchPods = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/pods', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPods(response.data);
-    } catch (error) {
-      console.error('Error fetching pods:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePodCreated = (newPod: Pod) => {
-    setPods((prevPods) => [...prevPods, newPod]);
     onPodCreated(newPod);
     setIsModalOpen(false);
   };
-
-  if (loading) {
-    return <div className="text-center text-gray-600 dark:text-gray-400">Loading pods...</div>;
-  }
 
   return (
     <div>
@@ -83,6 +58,7 @@ const PodList: React.FC<PodListProps> = ({onPodCreated }) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onPodCreated={handlePodCreated}
+        user={user}
       />
     </div>
   );

@@ -5,14 +5,12 @@ import Header from './Header';
 import GoalList from './GoalList';
 import PodList from './PodList';
 import PodModal from './PodModal';
-import { useTheme } from '../ThemeProvider';
 import axios from 'axios';
 import { Goal, Pod } from '../../types';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, loading, logout } = useAuthStore();
-  const { theme } = useTheme();
 
   const [goals, setGoals] = useState<Goal[]>([]);
   const [pods, setPods] = useState<Pod[]>([]);
@@ -32,8 +30,12 @@ const Dashboard: React.FC = () => {
       const response = await axios.get('/api/goals', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setGoals(response.data.goals);
-      setPods(response.data.pods);
+      setGoals(response.data);
+
+      const podResponse = await axios.get('/api/pods', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPods(podResponse.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -46,6 +48,11 @@ const Dashboard: React.FC = () => {
 
   const handlePodCreated = (newPod: Pod) => {
     setPods((prevPods) => [...prevPods, newPod]);
+    setIsModalOpen(false);
+  };
+
+  const handleGoalCreated = (newGoal: Goal) => {
+    setGoals(prevGoals => [...prevGoals, newGoal]);
     setIsModalOpen(false);
   };
 
@@ -70,11 +77,11 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Your Goals</h2>
-            <GoalList goals={goals} />
+            <GoalList goals={goals} user={user} onGoalCreated={handleGoalCreated} />
           </div>
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Your Pods</h2>
-            <PodList pods={pods} onPodCreated={handlePodCreated} />
+            <PodList pods={pods} onPodCreated={handlePodCreated} user={user} />
           </div>
         </div>
       </main>
@@ -83,6 +90,7 @@ const Dashboard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onPodCreated={handlePodCreated}
+        user={user}
       />
     </div>
   );
