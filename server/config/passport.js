@@ -1,5 +1,6 @@
 import passport from 'passport';
 import { initializeGitHubStrategy } from './github.strategy.js';
+import { initializeLocalStrategy } from './local.strategy.js';
 import User from '../models/User.js';
 
 export const initializePassport = () => {
@@ -15,6 +16,10 @@ export const initializePassport = () => {
       done(error, null);
     }
   });
+
+  // Initialize Local Strategy
+  const localStrategy = initializeLocalStrategy();
+  passport.use(localStrategy);
 
   // Only initialize GitHub strategy if credentials are provided
   if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {

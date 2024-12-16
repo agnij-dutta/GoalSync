@@ -49,9 +49,9 @@ export const authService = {
       // Set the token in the api instance
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      return user;
+      return { token, user };
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Register error:', error);
       throw handleApiError(error);
     }
   },

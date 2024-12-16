@@ -15,10 +15,11 @@ export const register = async (req, res) => {
     await user.save();
 
     const token = generateToken(user._id);
+    const sanitizedUser = sanitizeUser(user);
 
     res.status(201).json({
       token,
-      user: sanitizeUser(user)
+      user: sanitizedUser
     });
   } catch (error) {
     console.error('Registration error details:', error.message);

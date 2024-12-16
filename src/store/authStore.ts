@@ -15,7 +15,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  register: (data: RegisterData) => Promise<{ user: User }>;
   logout: () => void;
   clearError: () => void;
   setToken: (token: string) => Promise<void>;
@@ -43,7 +43,7 @@ const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   loading: false,
   error: null,
-  
+
   login: async (credentials) => {
     try {
       set({ loading: true, error: null });
@@ -57,49 +57,47 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ loading: false });
     }
   },
-  
-  register: async (data: RegisterData) => {
+
+  register: async (data) => {
     try {
       set({ loading: true, error: null });
-      const response = await authService.register(data);
-      set({ user: response.user, isAuthenticated: true });
-      localStorage.setItem('token', response.token);
+      const { token, user } = await authService.register(data);
 
-      // Fetch user profile after registration
-      const profileResponse = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${response.token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch user profile');
+      if (token) {
+        localStorage.setItem('token', token);
       }
 
-      const userProfile = await profileResponse.json();
-      set({ user: userProfile, isAuthenticated: true });
+      set({
+        user,
+        isAuthenticated: true,
+        loading: false,
+        error: null
+      });
+
+      return { user };
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      set({ error: errorMessage });
+      set({
+        loading: false,
+        error: getErrorMessage(error),
+        isAuthenticated: false,
+        user: null
+      });
       throw error;
-    } finally {
-      set({ loading: false });
     }
   },
-  
+
   logout: () => {
     localStorage.removeItem('token');
     set({ user: null, isAuthenticated: false, error: null });
   },
-  
+
   clearError: () => set({ error: null }),
-  
+
   setToken: async (token) => {
     try {
       set({ loading: true, error: null });
       localStorage.setItem('token', token);
-      
+
       const response = await fetch('/api/auth/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -115,19 +113,18 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ user, isAuthenticated: true, error: null });
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
-      set({ 
+      set({
         error: 'Failed to load user profile. Please try logging in again.',
         isAuthenticated: false,
-        user: null 
+        user: null
       });
       localStorage.removeItem('token');
     } finally {
       set({ loading: false });
     }
   },
-  
+
   setUser: (user) => set({ user }),
 }));
 
 export default useAuthStore;
-

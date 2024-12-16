@@ -19,24 +19,12 @@ const RegisterForm: React.FC = () => {
   const loading = useAuthStore((state) => state.loading);
   const { theme, setTheme } = useTheme();
 
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/user', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      useAuthStore.getState().setUser(response.data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerUser(data);
-      await fetchUserData();
-      navigate('/dashboard');
+      const { user } = await registerUser(data);
+      if (user) {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Registration failed:', error);
     }
@@ -151,4 +139,3 @@ const RegisterForm: React.FC = () => {
 };
 
 export default RegisterForm;
-
