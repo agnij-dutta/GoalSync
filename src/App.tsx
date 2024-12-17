@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/landing/LandingPage';
 import LoginForm from './components/auth/LoginForm';
@@ -16,24 +16,7 @@ import axios from 'axios';
 import { Pod } from './types';
 
 function App() {
-  const [goals, setGoals] = useState([]);
   const [pods, setPods] = useState<Pod[]>([]);
-
-  useEffect(() => {
-    const fetchGoals = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/goals', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setGoals(response.data); // Update goals state
-      } catch (error) {
-        console.error('Error fetching goals:', error);
-      }
-    };
-
-    fetchGoals();
-  }, []); // Empty dependency array to run once on mount
 
   const handlePodCreated = (newPod: Pod) => {
     setPods((prevPods) => [...prevPods, newPod]);
@@ -48,7 +31,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/pods" element={<PodList pods={pods} onPodCreated={handlePodCreated} />} />
-        <Route path="/goals" element={<GoalList goals={goals} />} />
+        <Route path="/goals" element={<GoalList />} />
         <Route path="/progress" element={<ProgressTracker />} />
         <Route path="/achievements" element={<AchievementSystem />} />
         <Route path="/notifications" element={<NotificationCenter />} />

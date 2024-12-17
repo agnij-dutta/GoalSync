@@ -1,22 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, Plus } from 'lucide-react';
 import { Goal, User } from '../../types';
 import GoalModal from './GoalModal';
+import api from '../../services/api';
 
 interface GoalListProps {
-  goals: Goal[];
-  user: User;
-  onGoalCreated: (goal: Goal) => void;
+  user?: User;
+  onGoalCreated?: (goal: Goal) => void;
 }
 
-const GoalList: React.FC<GoalListProps> = ({ goals, user, onGoalCreated }) => {
+const GoalList: React.FC<GoalListProps> = ({ user, onGoalCreated }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchGoals();
+  }, [user]);
+
+  const fetchGoals = async () => {
+    try {
+      if (!user) return;
+      const token = localStorage.getItem('auth_token');
+      const response = await api.get(`/goals?userId=${user._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setGoals(response.data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load goals. Please try again later.');
+      console.error('Error fetching goals:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoalCreated = (newGoal: Goal) => {
-    console.log('New goal created:', newGoal);
-    onGoalCreated(newGoal);
+    setGoals(prevGoals => [...prevGoals, newGoal]);
+    onGoalCreated?.(newGoal);
     setIsModalOpen(false);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-red-500">{error}</p>
+        <button
+          onClick={fetchGoals}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -75,15 +123,16 @@ const GoalList: React.FC<GoalListProps> = ({ goals, user, onGoalCreated }) => {
         ))}
       </div>
 
-      <GoalModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onGoalCreated={handleGoalCreated}
-        user={user}
-      />
+      {user && (
+        <GoalModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onGoalCreated={handleGoalCreated}
+          user={user}
+        />
+      )}
     </div>
   );
 };
 
 export default GoalList;
-

@@ -23,12 +23,18 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onGoalCreated, u
 
   const onSubmit = async (data: GoalFormData) => {
     try {
+      const token = localStorage.getItem('auth_token');
       const response = await api.post('/goals', {
         title: data.title,
         description: data.description,
         category: data.category,
         deadline: data.deadline,
-        progress: 0
+        progress: 0,
+        userId: user._id
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       onGoalCreated(response.data);
